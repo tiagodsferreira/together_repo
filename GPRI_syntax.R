@@ -308,3 +308,55 @@ kr20 <- function(x,hit=1)
 
 # function from: https://rdrr.io/github/DavideMassidda/testing/man/kr20.html
 kr20(HMHC)
+
+
+
+################################################
+# Convergent validity
+################################################
+# AGT (Adjustment to Genetic Testing)
+# HMHC (History of Metal Health Concerns)
+# PFHL (Personal/Family History of Loss)
+
+# Correlations
+
+cor_names <- c("agt_exper_new", "agt_ant_new", "hmhc_new", 
+               "ies_intrusion", "ies_avoidance", "ies_total",
+               "hads_anxiety", "hads_depression", 
+               "core_distress", 
+               "age", "education", "income", "nr_children")
+
+rcorr(as.matrix(DF_CONVAL[ ,cor_names]))
+corr.test(DF_CONVAL[ ,cor_names])
+
+# describe by sex
+describeBy(DF_CONVAL[c(4, 21:23)], "sex" )
+
+# t test
+t.test(agt_exper_new ~ sex, DF_CONVAL) # 0 = female, 1 = male
+cohensD(agt_exper_new ~ sex,
+        data = DF_CONVAL)
+
+t.test(agt_ant_new ~ sex, DF_CONVAL) # 0 = female, 1 = male
+cohensD(agt_ant_new ~ sex,
+        data = DF_CONVAL)
+
+t.test(gpri_hmhc ~ sex, DF_CONVAL) # 0 = female, 1 = male
+cohensD(gpri_hmhc ~ sex,
+        data = DF_CONVAL)
+
+# describe by cancer types
+describeBy(DF_CONVAL[c(10,  21:23)], "hist_cancer" )
+
+# t-tests
+t.test(agt_exper_new ~ hist_cancer, DF_CONVAL)
+cohensD(agt_exper_new ~ hist_cancer,
+        data = DF_CONVAL)
+
+t.test(agt_ant_new  ~ hist_cancer, DF_CONVAL)
+cohensD(agt_ant_new  ~ hist_cancer,
+        data = DF_CONVAL)
+
+t.test(gpri_hmhc ~ hist_cancer, DF_CONVAL)
+cohensD(gpri_hmhc ~ hist_cancer,
+        data = DF_CONVAL)
