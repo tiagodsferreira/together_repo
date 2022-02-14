@@ -266,3 +266,45 @@ model6_par[model6_par$op!="|" &
 #   "G:\\My Drive\\FPCEUP\\I&D Projects\\Together\\Together_Rproject\\model6parameters.csv",
 #   row.names = T
 # )
+
+
+################################################
+# Reliability analysis
+################################################
+PIGT <- dplyr::select(DF_ITEMS, c("GPRI_ITEM4a", "GPRI_ITEM4b", "GPRI_ITEM4c", "GPRI_ITEM5", 
+                                  "GPRI_ITEM6", "GPRI_ITEM7", "GPRI_ITEM8", "GPRI_ITEM9", 
+                                  "GPRI_ITEM10", "GPRI_ITEM11", "GPRI_ITEM12", "GPRI_ITEM13"))
+
+IIGT <- dplyr::select(DF_ITEMS, c("GPRI_ITEM4a", "GPRI_ITEM8", "GPRI_ITEM9", 
+                                  "GPRI_ITEM10", "GPRI_ITEM12", "GPRI_ITEM13"))
+
+EIGT <- dplyr::select(DF_ITEMS, c("GPRI_ITEM4b", "GPRI_ITEM4c", "GPRI_ITEM5", 
+                                  "GPRI_ITEM6", "GPRI_ITEM7", "GPRI_ITEM11"))
+
+HMHC <- dplyr::select(DF_ITEMS, c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16", 
+                                  "GPRI_ITEM18"))
+
+PFH <- dplyr::select(DF_ITEMS, c("GPRI_ITEM1", "GPRI_ITEM2a", "GPRI_ITEM3"))
+
+psych::alpha(PIGT, check.keys=T)
+psych::alpha(IIGT, check.keys=T)
+psych::alpha(EIGT, check.keys=T)
+psych::alpha(HMHC, check.keys=T)
+psych::alpha(PFH, check.keys=T)
+
+# Calculate the Kuder-Richardson formula 20 for estimate of reliability for tests with dichotomous items
+kr20 <- function(x,hit=1)
+{
+  x <- na.omit(x)
+  k <- ncol(x)
+  n <- nrow(x)
+  x <- data.frame(apply(x==hit, 2, as.numeric))
+  totalVar <- var(apply(x, 1, sum))
+  p <- colSums(x)/n
+  q <- 1-p
+  r <- (k/(k-1))*(1-sum(p*q)/totalVar)
+  return(r)
+}
+
+# function from: https://rdrr.io/github/DavideMassidda/testing/man/kr20.html
+kr20(HMHC)
