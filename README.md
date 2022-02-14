@@ -4,7 +4,7 @@ The GPRI is a screening instrument used by genetic-health professionals to ident
 
 **Key words:** Cancer; Oncology; Genetic Testing; GPRI; Hereditary Cancer Syndromes; Portuguese; Psycho-oncology; Psychosocial Risk; Screening; Validation.
 
-The analysis in the *GPRI_syntax.R* include:
+The analysis in the [GPRI_syntax.R](https://github.com/tiagodsferreira/together_repo/blob/main/GPRI_syntax.R) include:
 - Missing data analysis
 - Descriptive statistics;  
 - Confirmatory Factor Analysis; 
