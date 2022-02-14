@@ -85,3 +85,184 @@ pvalue$p
 # do not run
 # write.csv(pvalue$p, "iter-item pvalues.csv", row.names = T)
 
+
+################################################
+# Confirmatory Factor analysis
+################################################
+# Factors:
+# AGT = Adjustment to Genetic Testing (12 items)
+# HMH = History of Metal Health (5 items)
+# PFH = Personal & Family History (3 items)
+
+
+# Model 1: full model (ORIGINAL MODEL)
+## items 17 and 14 are perfectly correlated (r=1)
+## some estimated lv variances are negative
+model1 <- "
+AGT =~ GPRI_ITEM4a + GPRI_ITEM4b + GPRI_ITEM4c + GPRI_ITEM5 + GPRI_ITEM6 + 
+GPRI_ITEM7 + GPRI_ITEM8 + GPRI_ITEM9 + GPRI_ITEM10 + GPRI_ITEM11 + 
+GPRI_ITEM12 + GPRI_ITEM13
+
+HMH =~ GPRI_ITEM14 + GPRI_ITEM15 + GPRI_ITEM16 + GPRI_ITEM17 + GPRI_ITEM18
+
+PFH =~ GPRI_ITEM1 + GPRI_ITEM2a + GPRI_ITEM3 
+"
+fit_model1 <- cfa(model1, data=DF_ITEMS, estimator="WLSMV", meanstructure = TRUE, missing="pairwise",
+                  ordered=c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16", "GPRI_ITEM17",
+                            "GPRI_ITEM18",
+                            "GPRI_ITEM1", "GPRI_ITEM2a", "GPRI_ITEM3"))
+summary(fit_model1, rsquare = TRUE, fit.measures = TRUE, standardized = TRUE)
+fitMeasures(fit_model1, c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                          "rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", 
+                          "cfi.scaled", "srmr"))
+modificationindices(fit_model1, minimum.value = 10)
+
+# Model 2: Original model without item 17
+## Heywood cases involving items for PFH factor 
+
+model2 <- "
+AGT =~ GPRI_ITEM4a + GPRI_ITEM4b + GPRI_ITEM4c + GPRI_ITEM5 + GPRI_ITEM6 + 
+GPRI_ITEM7 + GPRI_ITEM8 + GPRI_ITEM9 + GPRI_ITEM10 + GPRI_ITEM11 + 
+GPRI_ITEM12 + GPRI_ITEM13
+
+HMH =~ GPRI_ITEM14 + GPRI_ITEM15 + GPRI_ITEM16 + GPRI_ITEM18
+
+PFH =~ GPRI_ITEM1 + GPRI_ITEM2a + GPRI_ITEM3 
+"
+fit_model2 <- cfa(model2, data=DF_ITEMS, estimator="WLSMV", meanstructure = TRUE, missing="pairwise", 
+                  ordered=c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16",
+                            "GPRI_ITEM18",
+                            "GPRI_ITEM1", "GPRI_ITEM2a", "GPRI_ITEM3"))
+summary(fit_model2, rsquare = TRUE, fit.measures = TRUE, standardized = TRUE)
+
+fitMeasures(fit_model2, c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                          "rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", 
+                          "cfi.scaled", "srmr"))
+
+modificationindices(fit_model2, minimum.value = 100)
+
+# Model 3: Original Model without item 17 plus modification indexes 
+## Heywood cases involving items for PFH factor 
+model3 <- "
+AGT =~ GPRI_ITEM4a + GPRI_ITEM4b + GPRI_ITEM4c + GPRI_ITEM5 + GPRI_ITEM6 + 
+GPRI_ITEM7 + GPRI_ITEM8 + GPRI_ITEM9 + GPRI_ITEM10 + GPRI_ITEM11 + 
+GPRI_ITEM12 + GPRI_ITEM13
+
+HMH =~ GPRI_ITEM14 + GPRI_ITEM15 + GPRI_ITEM16 + GPRI_ITEM18
+
+PFH =~ GPRI_ITEM1 + GPRI_ITEM2a + GPRI_ITEM3 
+
+AGT =~ GPRI_ITEM14
+GPRI_ITEM12 ~~ GPRI_ITEM13
+GPRI_ITEM4c ~~  GPRI_ITEM6
+
+"
+fit_model3 <- cfa(model3, data=DF_ITEMS, estimator="WLSMV", meanstructure = TRUE, missing="pairwise", 
+                  ordered=c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16",
+                            "GPRI_ITEM18",
+                            "GPRI_ITEM1", "GPRI_ITEM2a", "GPRI_ITEM3"))
+summary(fit_model3, rsquare = TRUE, fit.measures = TRUE, standardized = TRUE)
+
+fitMeasures(fit_model3, c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                          "rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", 
+                          "cfi.scaled", "srmr"))
+
+anova(fit_model2, fit_model3) # Comparing models
+
+# Model 4: Model propose by Maheu & Esplen, 2018 
+## Heywood cases involving items for PFH factor 
+
+model4 <- "
+Exper_AGT =~ GPRI_ITEM4a + GPRI_ITEM8 + GPRI_ITEM9 + GPRI_ITEM10 + 
+GPRI_ITEM12 + GPRI_ITEM13
+
+Ant_AGT =~ GPRI_ITEM4b + GPRI_ITEM4c + GPRI_ITEM5 + GPRI_ITEM6 + 
+GPRI_ITEM7 + GPRI_ITEM11
+
+HMH =~ GPRI_ITEM14 + GPRI_ITEM15 + GPRI_ITEM16 +  GPRI_ITEM18
+
+PFH =~ GPRI_ITEM1 + GPRI_ITEM2a + GPRI_ITEM3 
+
+Ant_AGT =~ GPRI_ITEM14
+GPRI_ITEM12 ~~ GPRI_ITEM13
+
+PFH ~~ VAR*PFH
+"
+fit_model4 <- cfa(model4, data=DF_ITEMS, estimator="WLSMV", meanstructure = TRUE, 
+                  missing="pairwise",
+                  ordered=c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16", "GPRI_ITEM17",
+                            "GPRI_ITEM18",
+                            "GPRI_ITEM1", "GPRI_ITEM2a", "GPRI_ITEM3"))
+summary(fit_model4, rsquare = TRUE, fit.measures = TRUE, standardized = TRUE)
+
+fitMeasures(fit_model4, c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                          "rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", 
+                          "cfi.scaled", "srmr"))
+modificationindices(fit_model4, minimum.value = 5)
+anova(fit_model3, fit_model4)
+
+# Model 5: Models without PFH factor
+## Heywood cases removes
+## This model provided adequate fit to the data
+
+model5 <- "
+AGT =~ GPRI_ITEM4a + GPRI_ITEM4b + GPRI_ITEM4c + GPRI_ITEM5 + GPRI_ITEM6 + 
+GPRI_ITEM7 + GPRI_ITEM8 + GPRI_ITEM9 + GPRI_ITEM10 + GPRI_ITEM11 + 
+GPRI_ITEM12 + GPRI_ITEM13
+
+HMH =~ GPRI_ITEM14 + GPRI_ITEM15 + GPRI_ITEM16 + GPRI_ITEM18
+
+AGT =~ GPRI_ITEM14
+GPRI_ITEM12 ~~ GPRI_ITEM13 
+GPRI_ITEM4c ~~  GPRI_ITEM6
+"
+fit_model5 <- cfa(model5, data=DF_ITEMS, estimator="WLSMV", meanstructure = TRUE, missing="pairwise",
+                  ordered=c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16",
+                            "GPRI_ITEM18"))
+summary(fit_model5, rsquare = TRUE, fit.measures = TRUE, standardized = TRUE)
+
+fitMeasures(fit_model5, c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                          "rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", 
+                          "cfi.scaled", "srmr"))
+
+modificationindices(fit_model5, minimum.value = 3)
+
+# Model 6: Final model
+## Best fitting model
+model6 <- "
+Exper_AGT =~ GPRI_ITEM4a + GPRI_ITEM8 + GPRI_ITEM9 + GPRI_ITEM10 + 
+GPRI_ITEM12 + GPRI_ITEM13
+
+Ant_AGT =~ GPRI_ITEM4b + GPRI_ITEM4c + GPRI_ITEM5 + GPRI_ITEM6 + 
+GPRI_ITEM7 + GPRI_ITEM11
+
+HMH =~ GPRI_ITEM14 + GPRI_ITEM15 + GPRI_ITEM16 +  GPRI_ITEM18
+
+Ant_AGT =~ GPRI_ITEM14
+GPRI_ITEM12 ~~ GPRI_ITEM13
+"
+fit_model6 <- cfa(model6, data=DF_ITEMS, estimator="WLSMV", meanstructure = TRUE, 
+                  missing="pairwise",
+                  ordered=c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16", "GPRI_ITEM17",
+                            "GPRI_ITEM18",
+                            "GPRI_ITEM1", "GPRI_ITEM2a", "GPRI_ITEM3"))
+summary(fit_model6, rsquare = TRUE, fit.measures = TRUE, standardized = TRUE)
+
+fitMeasures(fit_model6, c("chisq.scaled", "df.scaled", "pvalue.scaled", 
+                          "rmsea.scaled", "rmsea.ci.lower.scaled", "rmsea.ci.upper.scaled", 
+                          "cfi.scaled", "srmr"))
+anova(fit_model5, fit_model6)
+
+model6_par <- parameterestimates(fit_model6, zstat=FALSE, pvalue=TRUE)
+
+model6_par[model6_par$op!="|" & 
+             model6_par$op!="~*~" &
+             model6_par$op!="~1",]
+# do not run
+# write.csv(
+#   model6_par[model6_par$op != "|" &
+#                model6_par$op != "~*~" &
+#                model6_par$op != "~1", ],
+#   "G:\\My Drive\\FPCEUP\\I&D Projects\\Together\\Together_Rproject\\model6parameters.csv",
+#   row.names = T
+# )
