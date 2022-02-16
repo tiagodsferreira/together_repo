@@ -17,3 +17,5 @@ The file also include the all packages and user-defined function used for the st
 The GPRI three-factor structure is confirmed. Two GPRI factors exhibited good internal consistency, but one factor (Personal/family history of/Loss to Cancer) showed problems in internal consistency, discriminant, and convergent validity. 
 
 *NOTE:* The manuscript (Gomes et al., under review) reporting these analysis is currently under peer review
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6106770.svg)](https://doi.org/10.5281/zenodo.6106770)
