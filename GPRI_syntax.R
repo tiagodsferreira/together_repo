@@ -9,7 +9,7 @@ p_load(foreign, plyr, dplyr, psych, haven, lsr, nFactors, GPArotation, psychTool
 ###########################################
 as.numeric.factor <- function(x) {as.numeric(levels(x))[x]} #convert factors in numeric
 
-f <- function(x) {
+fun <- function(x) {
   freq <- table(x)
   perc <- prop.table(freq)
   return(as.matrix(rbind(freq, perc)))
@@ -42,7 +42,7 @@ TestMCARNormality(DF_ITEMS[5:24])
 ###########################################
 # Item descriptive statistics
 ###########################################
-sapply(DF_ITEMS, f)
+sapply(DF_ITEMS, fun) #function in line 12
 
 ################################################
 # Inter-item correlation
@@ -85,7 +85,6 @@ pvalue$p
 # do not run
 # write.csv(pvalue$p, "iter-item pvalues.csv", row.names = T)
 
-
 ################################################
 # Confirmatory Factor analysis
 ################################################
@@ -93,7 +92,6 @@ pvalue$p
 # AGT = Adjustment to Genetic Testing (12 items)
 # HMH = History of Metal Health (5 items)
 # PFH = Personal & Family History (3 items)
-
 
 # Model 1: full model (ORIGINAL MODEL)
 ## items 17 and 14 are perfectly correlated (r=1)
