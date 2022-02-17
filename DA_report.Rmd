@@ -1,18 +1,84 @@
 ---
-title: "R Notebook"
+title: "Data analysis Short Report"
 output: github_document
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+This is a short report of the data analysis conducted for the GPRI validation study (Gomes, et al., under review). Check the complete code for the data analysis  [here](https://github.com/tiagodsferreira/together_repo/blob/main/GPRI_syntax.R) and for the rmarkdown report [here](https://github.com/tiagodsferreira/together_repo/blob/main/DA_report.Rmd).
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-
-```{r}
-plot(cars)
+```{r, include=FALSE}
+load("DF_VAL.RData")
+load("DF_ITEMS.RData")
+load("DF_CONVAL.RData")
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+```{r, include=FALSE}
+library(pacman) 
+p_load(foreign, plyr, dplyr, psych, haven, lsr, nFactors, GPArotation, psychTools, semPlot, VIM, naniar, MissMech, lavaan, semTools, FactoMineR, missMDA, corrgram, summarytools)
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+as.numeric.factor <- function(x) {as.numeric(levels(x))[x]} #convert factors in numeric
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+fun <- function(x) {
+  freq <- table(x)
+  perc <- prop.table(freq)
+  return(as.matrix(rbind(freq, perc)))
+} # return frequencies and percentages
+```
+
+## Missing data analysis
+The percentage of missing data was reduced
+```{r, echo=FALSE}
+sum(is.na(DF_ITEMS))/prod(dim(DF_ITEMS))
+```
+
+### Paterns of missing data 
+```{r, echo=FALSE}
+miss_var_summary(DF_ITEMS)
+res<-summary(aggr(DF_ITEMS[5:24], sortVar=FALSE))$combinations
+head(res[rev(order(res[,2])),])
+matrixplot(DF_ITEMS, sortby = 2)
+vis_miss(DF_ITEMS, sort_miss = TRUE) 
+```
+
+## Item descriptive statistics
+```{r, echo=FALSE}
+print(dfSummary(DF_ITEMS[, -1:-4], 
+                varnumbers   = FALSE, 
+                valid.col    = FALSE, 
+                graph.magnif = 0.76),
+      method = 'render')
+```
+
+## Inter-item correlation
+
+### Correlations between items on the same scale
+```{r, echo=FALSE, warning=FALSE}
+names_AGT <- c("GPRI_ITEM4a", "GPRI_ITEM4b", "GPRI_ITEM4c", "GPRI_ITEM5",
+               "GPRI_ITEM6", "GPRI_ITEM7", "GPRI_ITEM8", "GPRI_ITEM9",
+               "GPRI_ITEM10", "GPRI_ITEM11", "GPRI_ITEM12", "GPRI_ITEM13")
+corr.AGT <- corr.test(DF_ITEMS[ ,names_AGT])
+
+knitr::kable(round(as.data.frame(corr.AGT$r),2))
+```
+
+
+```{r, echo=FALSE, warning=FALSE}
+names_HMH <- c("GPRI_ITEM14", "GPRI_ITEM15", "GPRI_ITEM16", "GPRI_ITEM17", "GPRI_ITEM18")
+tetra.HMH <- tetrachoric(DF_ITEMS[ ,names_HMH], correct=0)
+knitr::kable(round(as.data.frame(tetra.HMH$rho),2))
+```
+
+
+```{r, echo=FALSE, warning=FALSE}
+names_PFH <- c("GPRI_ITEM1", "GPRI_ITEM2a", "GPRI_ITEM3")
+tetra.PFH <- tetrachoric(DF_ITEMS[ ,names_PFH], correct=0)
+knitr::kable(round(as.data.frame(tetra.PFH$rho),2))
+```
+
+### Correlations between all the GPRI items
+```{r, echo=FALSE}
+corrgram(DF_ITEMS[ ,c(names_PFH, names_AGT, names_HMH)])
+```
+
+
+
+

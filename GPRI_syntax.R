@@ -42,7 +42,7 @@ TestMCARNormality(DF_ITEMS[5:24])
 ###########################################
 # Item descriptive statistics
 ###########################################
-sapply(DF_ITEMS, fun) #function in line 12
+sapply(DF_ITEMS[, -1:-4], fun) #function in line 12
 
 ################################################
 # Inter-item correlation
