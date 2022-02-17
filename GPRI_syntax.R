@@ -15,7 +15,6 @@ fun <- function(x) {
   return(as.matrix(rbind(freq, perc)))
 } # return frequencies and percentages
 
-
 ###########################################
 # Load data
 ###########################################
