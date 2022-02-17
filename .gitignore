@@ -2,5 +2,4 @@
 .Rhistory
 *.RData
 .Ruserdata
-*.Rmd
-DA_report_files/
+
