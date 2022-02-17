@@ -41,7 +41,10 @@ vis_miss(DF_ITEMS, sort_miss = TRUE)
 
 ## Item descriptive statistics
 ```{r, echo=FALSE}
-print(dfSummary(DF_ITEMS[, -1:-4], 
+DF_ITEMS_2 <- DF_ITEMS
+DF_ITEMS_2[, 17:24] <- lapply(DF_ITEMS_2[, 17:24], factor)
+
+print(dfSummary(DF_ITEMS_2[, -1:-4], 
                 varnumbers   = FALSE, 
                 valid.col    = FALSE, 
                 graph.magnif = 0.76),
