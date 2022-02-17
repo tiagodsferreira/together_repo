@@ -2,4 +2,9 @@
 .Rhistory
 *.RData
 .Ruserdata
+<<<<<<< HEAD
 *.Rmd
+=======
+*.Rmd
+DA_report_files/
+>>>>>>> 706abd0cd261da6452f1ac5f6b497453e0085031
